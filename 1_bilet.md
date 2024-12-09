@@ -43,15 +43,7 @@ int main() {
 
 BOOL WINAPI DllMain(HINSTANCE hlnstDll, DWORD dwReason, LPVOID IpReserved)
 {
-	switch (dwReason)
-	{
-	case DLL_PROCESS_ATTACH:
-	case DLL_THREAD_ATTACH:
-	case DLL_THREAD_DETACH:
-	case DLL_PROCESS_DETACH:
-		break;
-	}
-		return TRUE;
+	return TRUE;
 }
 	extern "C" __declspec(dllimport) int PowMy(const int num, const int num_pow);
 	int PowMy(const int num, const int num_pow) {
