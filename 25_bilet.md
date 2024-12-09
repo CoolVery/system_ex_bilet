@@ -4,7 +4,7 @@
 -----
 
 
-Windows
+Код будет работать там и там, надо убрать system и malloc.h заменить на stdlib.h
 ```C
 #include <stdio.h>
 #include <malloc.h>
