@@ -12,14 +12,12 @@ CRITICAL_SECTION criticalSection;
 
 // Функция потока
 DWORD WINAPI ThreadFunc(LPVOID lpParam) {
-    int threadId = *(int*)lpParam;
     for (int i = 0; i < 1000000; i++) {
         // Вход в критическую секцию
         EnterCriticalSection(&criticalSection);
 
         // Доступ к общему ресурсу.  Защита от гонки данных.
         sharedResource++;
-        //printf("Поток %d: sharedResource = %d\n", threadId, sharedResource);
 
         // Выход из критической секции
         LeaveCriticalSection(&criticalSection);
@@ -28,24 +26,21 @@ DWORD WINAPI ThreadFunc(LPVOID lpParam) {
 }
 
 int main() {
+    system("chcp 1251");
     // Инициализация критической секции
     InitializeCriticalSection(&criticalSection);
 
     // Создание потоков
-    DWORD threadId1, threadId2;
-    int threadParam1 = 1;
-    int threadParam2 = 2;
-    HANDLE hThread1 = CreateThread(NULL, 0, ThreadFunc, &threadParam1, 0, &threadId1);
-    HANDLE hThread2 = CreateThread(NULL, 0, ThreadFunc, &threadParam2, 0, &threadId2);
+    HANDLE hThread1 = CreateThread(NULL, 0, ThreadFunc, NULL, 0, 0);
+    HANDLE hThread2 = CreateThread(NULL, 0, ThreadFunc, NULL, 0, 0);
 
     // Ожидание завершения потоков
     WaitForSingleObject(hThread1, INFINITE);
     WaitForSingleObject(hThread2, INFINITE);
+    printf("Поток: sharedResource = %d\n", sharedResource);
 
     // Удаление критической секции
     DeleteCriticalSection(&criticalSection);
-
-    printf("Значение sharedResource после завершения потоков: %d\n", sharedResource);
 
     return 0;
 }
