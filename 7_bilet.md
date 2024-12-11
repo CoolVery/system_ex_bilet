@@ -16,12 +16,12 @@ LRESULT CALLBACK LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lParam) {
             asciiChar = (char)kbStruct->vkCode;
         
 
-            if (asciiChar) {
-                // Вывод в MessageBox
-                wchar_t message[100];
-                wsprintfW(message, L"Нажата клавиша: %c", (wchar_t)asciiChar); //Используем sprintf для безопасной строки
-                MessageBoxW(NULL, message, L"Клавиатурный хук", MB_OK);
-            }
+            char* keyName = (char*)calloc(100, 1);
+
+            // Получение кода клавиши.  Это упрощенное получение - может не работать для всех клавиш корректно.
+            asciiChar = (char)kbStr->vkCode;
+            keyName[0] = asciiChar;
+            MessageBoxA(NULL, keyName, "DS", NULL);
         }
     return CallNextHookEx(NULL, nCode, wParam, lParam);
 }
