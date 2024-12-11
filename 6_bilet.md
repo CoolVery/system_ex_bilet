@@ -11,7 +11,7 @@ LRESULT CALLBACK KeyboardProc(int nCode, WPARAM wParam, LPARAM lParam) {
         char keyName[256] = { 0 }; // Буфер для имени клавиши
 
         // Получаем имя клавиши.  Обработка ошибки необходима!
-        int result = GetKeyNameText(pKeyboard->scanCode << 16, keyName, 256);
+        int result = GetKeyNameTextA(pKeyboard->scanCode << 16, keyName, 256);
         if (result == 0) {
             // Обработка ошибки: GetKeyNameText вернула 0
             MessageBoxA(NULL, "Ошибка получения имени клавиши!", "Ошибка", MB_ICONERROR);
