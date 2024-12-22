@@ -14,13 +14,27 @@ LRESULT CALLBACK LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lParam) {
             char asciiChar;
             // Получение кода клавиши.  Это упрощенное получение - может не работать для всех клавиш корректно.
             asciiChar = (char)kbStruct->vkCode;
-        
-
-            if (asciiChar) {
-                // Вывод в MessageBox
-                wchar_t message[100];
-                wsprintfW(message, L"Нажата клавиша: %c", (wchar_t)asciiChar); //Используем sprintf для безопасной строки
-                MessageBoxW(NULL, message, L"Клавиатурный хук", MB_OK);
+			wchar_t symbol[100];
+			if (asciiChar) {
+			    switch (asciiChar)
+			    {
+			    case 13:
+			        wsprintf(symbol, L"Enter");
+			        break;
+			    case 32:
+			        wsprintf(symbol, L"Space");
+			        break;
+			    case 9:
+			        wsprintf(symbol, L"Tab");
+			        break;
+			    default:
+			        wsprintf(symbol, L"%lc", (wchar_t)asciiChar);
+			        break;
+			    }
+			    // Вывод в MessageBox
+			    wchar_t message[100];
+			    wsprintfW(message, L"Нажата клавиша: %ls", symbol); //Используем sprintf для безопасной строки
+			    MessageBoxW(NULL, message, L"Клавиатурный хук", MB_OK);
             }
         }
     return CallNextHookEx(NULL, nCode, wParam, lParam);

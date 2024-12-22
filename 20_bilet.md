@@ -1,15 +1,17 @@
 ## Создание и настройка проекта WinAPI. Вывод сообщения в messagebox. Текст сообщения считывается из текстового файла в кодировке Юникод
 
 Уточнение - файлик текстовый создаcтся в кодировке UTF-8, нам нужно поменять на UTF-16 (через Сохранить Как)
+Также надо в свойстве проекта в
+Компилятор -> Все параметры -> Подсистема - Вместо консоли ставим Windows
 
 ```C
-#include <Windows.h>
+#include <windows.h>
 #include <stdlib.h>
 #include <stdio.h>
 
-int main() {
+int WINAPI WinMain(HINSTANCE hk, HINSTANCE hPre, LPSTR lpCmd, int nCmd) {
 	wchar_t buffer[200];
-	
+
 	DWORD count_read = 0;
 	HANDLE fileH;
 	fileH = CreateFileW(
@@ -35,4 +37,5 @@ int main() {
 		}
 	}
 }
+
 ```

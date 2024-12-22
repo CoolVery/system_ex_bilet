@@ -3,24 +3,25 @@
 ```C
 #include <windows.h>
 #include <winuser.h>
+#include <wchar.h>
 
 // Процедура обработки хука
 LRESULT CALLBACK KeyboardProc(int nCode, WPARAM wParam, LPARAM lParam) {
     if (nCode >= 0 && wParam == WM_KEYDOWN) {
         KBDLLHOOKSTRUCT* pKeyboard = (KBDLLHOOKSTRUCT*)lParam;
-        char keyName[256] = { 0 }; // Буфер для имени клавиши
+        wchar_t keyName[256]; // Буфер для имени клавиши
 
         // Получаем имя клавиши.  Обработка ошибки необходима!
-        int result = GetKeyNameText(pKeyboard->scanCode << 16, keyName, 256);
+        int result = GetKeyNameTextW(pKeyboard->scanCode << 16, keyName, 256);
         if (result == 0) {
             // Обработка ошибки: GetKeyNameText вернула 0
             MessageBoxA(NULL, "Ошибка получения имени клавиши!", "Ошибка", MB_ICONERROR);
         }
         else {
             // Вывод имени клавиши в MessageBox
-            char message[512];
-            sprintf_s(message, sizeof(message), "Нажата клавиша: %s", keyName);
-            MessageBoxA(NULL, message, "Нажатая клавиша", MB_OK);
+            wchar_t message[512];
+            swprintf_s(message, sizeof(message) / sizeof(message[0]), L"Нажата клавиша: %ls", keyName);
+            MessageBox(NULL, message, L"Нажатая клавиша", MB_OK);
         }
     }
     return CallNextHookEx(NULL, nCode, wParam, lParam);
