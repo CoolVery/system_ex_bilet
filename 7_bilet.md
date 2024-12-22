@@ -36,6 +36,7 @@ LRESULT CALLBACK LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lParam) {
 			    wsprintfW(message, L"Нажата клавиша: %ls", symbol); //Используем sprintf для безопасной строки
 			    MessageBoxW(NULL, message, L"Клавиатурный хук", MB_OK);
             }
+
         }
     return CallNextHookEx(NULL, nCode, wParam, lParam);
 }
