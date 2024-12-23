@@ -18,7 +18,7 @@ int main() {
 	perror("read");
 	if (readIs != -1) {
 		buffer[strlen(buffer)] = '\0';
-		int fileW = open("coefAns.txt", O_WRONLY | O_CREAT, S_IRWXU);
+		int fileW = open("coefAns.txt", O_WRONLY | O_CREAT | O_TRUNC, S_IRWXU);
 		int writeIs = write(fileW, buffer, strlen(buffer));
 		if (writeIs != -1) {
 			printf("%s", buffer);
