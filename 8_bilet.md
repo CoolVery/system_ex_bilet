@@ -1,4 +1,5 @@
 ## Программа для преобразования числа в строку и склейки двух строк. Разработать без использования системных функций (отдельно для Windows и Linux)
+Этот код не будет работать, если числа 3000.32 - он выведет 3.32, поэтому смотрим код ниже или рискуйте, что Мухин не попадет
 ```C
 #include<malloc.h>
 #include<stdio.h>
@@ -83,5 +84,105 @@ char* doubleToStr(double a) {
 int main() {
 	printf("%s", doubleToStr(55));
 	printf("%s", concat("RE32dsds", "ew"));
+}
+```
+
+Этот код проверяет отрицательное, если мы вписали просто 0, или 0.3 - крч много че
+```C
+char* concatStr(char* a, char* b) {
+	int lenA = 0;
+	int lenB = 0;
+
+
+	for (size_t i = 0; a[i] != '\0'; i++)
+	{
+		lenA = i + 1;
+	}
+	for (size_t i = 0; b[i] != '\0'; i++)
+	{
+		lenB = i + 1;
+	}
+	char* result = calloc(lenA + lenB - 1, 1);
+
+	for (size_t i = 0; i < lenA; i++)
+	{
+		result[i] = a[i];
+	}
+
+	for (size_t i = 0; i < lenB; i++)
+	{
+		result[lenA + i] = b[i];
+	}
+	result[lenA + lenB] = '\0';
+	return result;
+}
+char* doubleToStr(double a) {
+	int flagNegativ = 0;
+	int flagPoint = 0;
+	char* numstr = calloc(2, 1);
+	char* buf = calloc(1, 1);
+	if (a == 0)
+	{
+		numstr[0] = '0';
+		numstr[1] = '\0';
+		return numstr;
+	}
+	if (a < 0) {
+		flagNegativ++;
+		a *= -1;
+		
+	}
+
+	int intA = (int)a;
+	double drob = a - intA;
+	numstr[0] = '\0';
+	buf[1] = '\0';
+	if (intA == 0) {
+		numstr[0] = '0';
+		numstr[1] = '\0';
+	}
+	while (intA != 0) {
+		int left = intA % 10;
+		intA /= 10;
+		buf[0] = (char)left + '0';
+		numstr = concatStr(buf, numstr);
+	}
+	
+	
+	int count = 0;
+	while (drob != 0 && count < 5) {
+		if (!flagPoint)
+		{
+			flagPoint++;
+			buf[0] = ',';
+			numstr = concatStr(numstr, buf);
+		}
+		drob = drob * 10;
+		int left = (int)drob;
+		buf[0] = (char)left + '0';
+		numstr = concatStr(numstr, buf);
+		count++;
+		drob = drob - left;
+	}
+
+	
+
+	if (flagNegativ)
+	{
+		int lenStr = 0;
+		for (size_t i = 0; numstr[i] != '\0'; i++)
+		{
+			lenStr = i + 1;
+		}
+		char* resultNeg = calloc(lenStr + 2, 1);
+		for (size_t i = 0; i < lenStr; i++)
+		{
+			resultNeg[i + 1] = numstr[i];
+		}
+		resultNeg[0] = '-';
+		resultNeg[lenStr + 1] = '\0';
+		return resultNeg;
+	}
+	return numstr;
 }
 ```
