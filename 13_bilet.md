@@ -1,6 +1,6 @@
 ## Программа для считывания нескольких числовых значений из строки и из записи в числовой массив (разделитель - пробел). Количество значений в строке заранее неизвестно. (отдельно для Windows и Linux)
 
-Код работает как на винде так и на линукс
+Код работает как на винде так и на линукс - Это крч сложный ваирк, где надо ручками писать парсер, но так как нам МОЖНО использовать системные функции - смотрим код ниже
 ```C
 #include <stdio.h>
 #include <stdlib.h>
@@ -73,5 +73,26 @@ int main() {
     {
         printf("\n%f\n", result_array[i]);
     }
+}
+```
+
+Вот это уже лучше 
+```C
+int main() {
+	double* arrayDouble = calloc(0, sizeof(double));
+	char* strNum = calloc(100, 1);
+	gets(strNum);
+	char* numbers = strtok(strNum, " ");
+	int count = 1;
+	while (numbers != NULL) {
+		arrayDouble = realloc(arrayDouble, sizeof(double) * count);
+		arrayDouble[count - 1] = atof(numbers);
+		count++;
+		numbers = strtok(NULL, " ");
+	}
+	for (size_t i = 0; i < count - 1; i++)
+	{
+		printf("%f\n", arrayDouble[i]);
+	}
 }
 ```
