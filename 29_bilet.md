@@ -73,45 +73,73 @@ int main(int argc, char* argv[])
 В линукс
 ```C
 #include <stdio.h>
-#include <unistd.h> //fork, close, read, write, pipe, _exit
-#include <sys/wait.h> //wait
-#include <string.h>//strlen
-#include <malloc.h>
-#define BUF_SIZE 1
-#define MESSAGE "Hello world"
+#include <unistd.h>
+#include <sys/wait.h>
+#include <stdlib.h>
+#include <string.h>
 
-int main() {
-	int pfd[2]; // Файловые дескрипторы канала
-	ssize_t numRead;
-	if (pipe(pfd) == -1) // Создаем канал
-		_exit(1);//в случае ошибки завершаем работу программы
-	switch (fork()) {
-	case -1:
-		_exit(1);
-	case 0: //потомок только читает данные из канала
-		if (close(pfd[1]) == -1) // Записывающий конец не используется
-			_exit(1);
-			do { // Считываем данные из канала до тех пор, пока он не опустеет
-				char * buf = calloc(1,BUF_SIZE);//создаем буфер для чтения
-				numRead = read(pfd[0], buf, BUF_SIZE);//операция блокируется до тех пор, пока в канал не поступят данные
-				if (numRead == -1)
-					_exit(1);
-				printf("Родитель написал: %s\n",buf);//выводим на экран то, что прочитали
-				free(buf);//очищаем буфер
-			}
-			while (numRead != 0);
-				if (close(pfd[0]) == -1)
-					_exit(1);
-				_exit(0);
-	default: // Родитель записывает в канал
-		if (close(pfd[0]) == -1) // Считывающий конец не используется
-			_exit(1);
-		if (write(pfd[1], MESSAGE, strlen(MESSAGE)) != strlen(MESSAGE))
-			_exit(1);
-		if (close(pfd[1]) == -1) // Потомок увидит символ завершения файла
-			_exit(1);
-		wait(NULL); // Ждем завершения потомка
-		_exit(0);
-	}
+#define BUFSIZ 512
+
+int main()
+{
+    int pipAnim[2];
+    int numRead, numWrite;
+    if (pipe(pipAnim) == -1) {
+        printf("ошибка создания дескриптор\n");
+        exit(1);
+    }
+    switch(fork()) {
+        case -1:
+            printf("Форк не сработал\n");
+            exit(1);
+            break;
+        case 0:
+            if (close(pipAnim[1]) == -1) {
+                printf("ошибка закрытия записи\n");
+                exit(1);
+            }
+            do
+            {
+                char* buf = calloc(BUFSIZ,sizeof(char));
+                numRead = read(pipAnim[0], buf, BUFSIZ * sizeof(char));
+                if (numRead == -1)
+                {
+                    printf("ошибка чтения\n");
+                    exit(1);
+                }
+                printf("мать пишет - %s\n", buf);
+                free(buf);                
+            } while (numRead != 0);
+            if (close(pipAnim[0]) == -1) {
+                printf("ошибка закрытия чтение\n");
+                exit(1);
+            }
+            exit(0);
+            break;
+        default:
+            if (close(pipAnim[0]) == -1) {
+                printf("ошибка закрытия чтения\n");
+                exit(1);
+            }
+            char* buf = calloc(BUFSIZ, sizeof(char));
+            while (buf[0] != ' ')
+            {
+               gets(buf);
+                int numWrite = write(pipAnim[1], buf, BUFSIZ * sizeof(char));
+                if (numWrite == -1)
+                {
+                    printf("ошибка записи\n");
+                    exit(1);
+                }
+            }
+            if (close(pipAnim[1]) == -1)
+            {
+                printf("ошибка закрытия записи\n");
+                exit(1);
+            }
+            wait(NULL);
+            free(buf);
+            break;
+    }
 }
 ```
