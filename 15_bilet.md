@@ -1,5 +1,6 @@
 ## Обработка нажатия клавиши мыши в системе (выписать в messagebox какая клавиша нажата и сколько раз)
 
+Старое
 ```C
 #include <windows.h>
 #include <stdio.h>
@@ -44,5 +45,55 @@ int main() {
 
 	UnhookWindowsHookEx(hHook);
 	return 0;
+}
+```
+Обновил и добавил обработку колесика мыши + вынул в другую функцию (Мухин смотрит на это)
+
+```C
+typedef struct {
+	int leftClick;
+	int rightClick;
+	int centerClick;
+} ClicksMouse;
+
+ClicksMouse structCountClick;
+
+void SayCount(int count, LPWSTR clickDown) {
+	char buf[200];
+	swprintf(buf, 200, L"Нажата клавиша: %ls\nНажата столько раз: %d", clickDown, count);
+	MessageBox(NULL, buf, L"Внимание", MB_OK);
+}
+
+LRESULT CALLBACK countClick(int n, WPARAM w, LPARAM l) {
+	switch (w)
+	{
+	case WM_LBUTTONDOWN:
+		structCountClick.leftClick++;
+		SayCount(structCountClick.leftClick, L"Левая клавиша мыши");
+		break;
+	case WM_RBUTTONDOWN:
+		structCountClick.rightClick++;
+		SayCount(structCountClick.rightClick, L"Правая клавиша мыши");
+		break;
+	case WM_MBUTTONDOWN:
+		structCountClick.centerClick++;
+		SayCount(structCountClick.centerClick, L"Колесо мыши");
+		break;
+	default:
+		break;
+	}
+	return CallNextHookEx(NULL, n, w, l);
+}
+
+int main() {
+	HHOOK hook = SetWindowsHookEx(WH_MOUSE_LL, countClick, GetModuleHandle(NULL), 0);
+	if (hook != NULL) {
+		MSG msg;
+		while (GetMessage(&msg, NULL, 0, 0)) {
+			TranslateMessage(&msg);
+			DispatchMessage(&msg);
+		}
+		UnhookWindowsHookEx(hook);
+	}
 }
 ```
