@@ -94,3 +94,51 @@ int main() {
 	printf("%f", convert_str_to_double(L"-3.2777"));
 }
 ```
+
+```C
+double convertStrDouble(LPWSTR str) {
+	double result = 0.0;
+	for (size_t i = 0; str[i] != L'\0'; i++)
+	{
+		if (str[i] <= '0' && str[i] >= '9')
+		{
+			if (str[i] != L'.' || str[i] != L'-') return -22;
+
+		}
+	}
+	int countPoint = 0;
+	int countMin = 0;
+	for (size_t i = 0; i < str[i] != L'\0'; i++)
+	{
+		if (str[i] == L'.') countPoint++;
+		if (str[i] == L'-') countMin++;
+
+	}
+	if (countPoint > 1 || countMin > 1) return -22;
+	int negative = 0;
+	if (str[0] == L'-') {
+		negative++;
+	}
+	int index_point = 0;
+	int len_str = 0;
+	for (size_t i = 0 + negative; i < str[i] != L'\0'; i++)
+	{
+		len_str++;
+		if (str[i] != L'.') {
+			result += str[i] - L'0';
+			result *= 10;
+		}
+		else {
+			index_point = i;
+		}
+	}
+	int delitel = 1;
+	for (size_t i = 0; i < len_str - index_point; i++)
+	{
+		delitel *= 10;
+	}
+	result /= delitel;
+	if (negative) return result * -1;
+	else return result;
+}
+```
